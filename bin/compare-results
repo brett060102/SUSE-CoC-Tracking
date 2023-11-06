@@ -1,0 +1,38 @@
+# Copyright (c) 2023 SUSE LLC
+#
+# This file is part of SUSE hardened image validation.
+#
+# This is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this software.  If not, see <http://www.gnu.org/licenses/>.
+
+#!/bin/bash
+
+mkdir -p ./results
+URN="${1:-suse:sles-sap-15-sp4-hardened:gen2:2023.08.28}"
+IMAGE=$(echo ${URN} | awk -F : '{print $4 "-" $2 }')
+
+EXIT=0
+
+echo "INFO: Compare initial results to base line"
+diff -c ./results/${IMAGE}-Initial-CiSL1.txt baseline/${IMAGE}-Initial-CiSL1.txt || {
+    echo "ERROR: Check against initial baseline failed."
+    EXIT=1
+    }
+
+echo "INFO: Compare final results to base line"
+diff -c ./results/${IMAGE}-Post-Remed-CiSL1.txt ./baseline/${IMAGE}-Post-Remed-CiSL1.txt || {
+    echo "ERROR: Check against Post Remediation baseline failed."
+    EXIT=1
+    }
+
+exit ${EXIT}
