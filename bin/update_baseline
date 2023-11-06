@@ -1,0 +1,33 @@
+# Copyright (c) 2023 SUSE LLC
+#
+# This file is part of SUSE hardened image validation.
+#
+# This is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this software.  If not, see <http://www.gnu.org/licenses/>.
+
+#!/bin/bash
+
+IMAGE="${1:-2023.08.28}"
+
+echo "INFO: update initial results"
+cp ./results/${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt baseline/${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt
+
+
+echo "INFO: update final results "
+cp ./results/${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt ./baseline/${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt
+
+echo "IMFO: generate md5sums"
+cd  ./baseline
+md5sum ${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt > ${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt.MD5
+md5sum ${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt > ${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt.MD5
+exit ${EXIT}

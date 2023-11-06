@@ -1,0 +1,57 @@
+# Copyright (c) 2023 SUSE LLC
+#
+# This file is part of SUSE hardened image validation.
+#
+# This is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this software.  If not, see <http://www.gnu.org/licenses/>.
+
+#!/bin/bash
+
+mkdir -p ./results
+
+IMAGE="${1:-2023.08.28}"
+
+if [[ -z ${2} ]]; then
+   EXECUTE=""
+else
+   EXECUTE="ssh -o StrictHostKeyChecking=no ${2}"
+fi
+   
+#SYSTEM="${2:-localhost}"
+EXIT=0
+
+echo "INFO: collect initial results"
+${EXECUTE} sudo oscap xccdf eval --profile cis_server_l1 /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml 2>> ./results/${IMAGE}-SLE15-4-SAP.errors  > ./results/${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt
+
+echo "INFO: CIS level 1 remediation pass 1"
+${EXECUTE} sudo oscap xccdf eval --remediate --profile cis_server_l1 /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml  2>> ./results/${IMAGE}-SLE15-4-SAP.errors > ./results/${IMAGE}-SLE15-4-SAP-Initial-CiSL1-Remed-Pass1.txt
+
+echo "INFO: CIS level 1 remediation pass 2"
+${EXECUTE} sudo oscap xccdf eval --remediate --profile cis_server_l1 /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml  2>> ./results/${IMAGE}-SLE15-4-SAP.errors > ./results/${IMAGE}-SLE15-4-SAP-Initial-CiSL1-Remed-Pass2.txt
+
+echo "INFO: collect final results"
+${EXECUTE} sudo oscap xccdf eval --profile cis_server_l1 /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml  2>> ./results/${IMAGE}-SLE15-4-SAP.errors > ./results/${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt
+
+echo "INFO: Compare initial results to base line"
+diff -c ./results/${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt baseline/${IMAGE}-SLE15-4-SAP-Initial-CiSL1.txt || {
+    echo "ERROR: Check against initial baseline failed."
+    EXIT=1
+    }
+
+echo "INFO: Compare final results to base line"
+diff -c ./results/${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt ./baseline/${IMAGE}-SLE15-4-SAP-Post-Remed-CiSL1.txt || {
+    echo "ERROR: Check against Post Remediation baseline failed."
+    EXIT=1
+    }
+
+exit ${EXIT}
