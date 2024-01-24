@@ -24,7 +24,7 @@ IMAGE="${1:-2023.08.28}"
 if [[ -z ${2} ]]; then
    EXECUTE=""
 else
-   EXECUTE="ssh -o StrictHostKeyChecking=no ${2}"
+   EXECUTE="ssh -o ServerAliveInterval=60 -o StrictHostKeyChecking=no ${2}"
 fi
    
 #SYSTEM="${2:-localhost}"
