@@ -24,10 +24,11 @@ and reports an error if there are any differences.
 ## Requirements
 Cloud VM instance on a Public Cloud Service Provider 
 (currently only tested with Microsoft Azure) created from a
-hardened SUSE image (has only been tested with 
-suse:sles-sap-15-sp4-hardened:gen2:2023.08.28).
-
-Image must be set up for passwordless ssh access.
+hardened SUSE image teste images are: <br>
+(has only been tested with 
+suse:sles-sap-15-sp4-hardened:gen2:2023.08.28<br>
+suse:sles-sap-15-sp4-hardened-gen2:2024.01.24<br>
+Instance must be set up for passwordless ssh access.
 
 ## Steps to Perform Test
 ### step 1: clone repository on a system that can ssh to VM to be tested.
@@ -57,10 +58,11 @@ $ git clone https://github.com/brett060102/SUSE-CoC-Tracking.git<br>
 $ cd SUSE-CoC-Tracking<br>
 $ git archive --format=tar main | ssh azureuser@IP_ADDRESS "(mkdir -p ./SUSE-CoC-Tracking; cd ./SUSE-CoC-Tracking; tar -xvf-)"<br>
 
-Then ssh to remote system and run test<br>
-$ ssh azureuser@IP_ADDRESS<br>
+Then ssh to remote system and run test. When doing remediation there can be long
+period of no terminal activity, so "-o ServerAliveInterval" should be used.<br>
+$ ssh  -o ServerAliveInterval=60 azureuser@IP_ADDRESS<br>
 $ cd SUSE-CoC-Tracking<br>
-$ ./bin/test-system<br>
+$ ./bin/test-system 2023.08.28<br>
 
 Or the git repository may be directly "cloned" to the remote system to be tested.
 This does require having git installed on the remote system. Installing git on the remote system, does not
@@ -77,7 +79,7 @@ $ git clone https://github.com/brett060102/SUSE-CoC-Tracking.git
 
 Run test<br>
 $ cd ./SUSE-CoC-Tracking<br>
-$ ./bin/test-system<br>
+$ ./bin/test-system 2023.08.28<br>
 
 ## Checking Results Manually
 The results of a run may also be checked manually.
